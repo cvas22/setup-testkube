@@ -34978,6 +34978,7 @@ const params = {
 // unauthenticated ones, which runners sharing an IP address use up quickly. The token is sent only when the workflow
 // runs on github.com, since a GitHub Enterprise Server token isn't valid there.
 const isGitHubDotCom = (process.env.GITHUB_SERVER_URL || "https://github.com") === "https://github.com";
+const githubAuth = params.githubToken && isGitHubDotCom ? `Bearer ${params.githubToken}` : undefined;
 const githubApiHeaders = params.githubToken && isGitHubDotCom ? { authorization: `Bearer ${params.githubToken}` } : {};
 const mode = params.organization || params.environment || params.token ? "cloud" : "kubectl";
 if (mode === "cloud") {
@@ -35098,7 +35099,7 @@ else {
         : `https://github.com/kubeshop/testkube/releases/download/${encodedVersion}/testkube_${encodedVerSysArch}.tar.gz`;
     if (!isTestkubeInstalled) {
         process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
-        const artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__/* .downloadTool */ .lw(artifactUrl);
+        const artifactPath = await _actions_tool_cache__WEBPACK_IMPORTED_MODULE_4__/* .downloadTool */ .lw(artifactUrl, undefined, githubAuth);
         if (node_fs__WEBPACK_IMPORTED_MODULE_1__.existsSync(`${binaryDirPath}/kubectl-testkube`)) {
             node_fs__WEBPACK_IMPORTED_MODULE_1__.rmSync(`${binaryDirPath}/kubectl-testkube`);
         }

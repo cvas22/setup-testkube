@@ -43,6 +43,7 @@ const params: Params = {
 // unauthenticated ones, which runners sharing an IP address use up quickly. The token is sent only when the workflow
 // runs on github.com, since a GitHub Enterprise Server token isn't valid there.
 const isGitHubDotCom = (process.env.GITHUB_SERVER_URL || "https://github.com") === "https://github.com";
+const githubAuth = params.githubToken && isGitHubDotCom ? `Bearer ${params.githubToken}` : undefined;
 const githubApiHeaders: Record<string, string> =
   params.githubToken && isGitHubDotCom ? { authorization: `Bearer ${params.githubToken}` } : {};
 
@@ -181,7 +182,7 @@ if (isTestkubeInstalled) {
 
   if (!isTestkubeInstalled) {
     process.stdout.write(`Downloading the artifact from "${artifactUrl}"...\n`);
-    const artifactPath = await toolCache.downloadTool(artifactUrl);
+    const artifactPath = await toolCache.downloadTool(artifactUrl, undefined, githubAuth);
     if (fs.existsSync(`${binaryDirPath}/kubectl-testkube`)) {
       fs.rmSync(`${binaryDirPath}/kubectl-testkube`);
     }
